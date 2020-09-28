@@ -187,16 +187,31 @@ const {apellido} = crearPersona('Fernando','Herrera');
 console.log(apellido);
 
 //-
+
+
+
 var mpersona = {
     nombre: "Juana",
     apellido: "Herrera",
     edad: 25,
+
     direccion: {
         pais: "Costa Rica",
         edificio: {
             nombre: "Edificio Principal"
         }
-    }
+    },
+    metodo: () => {
+        console.log('metodo');
+    },
+
+    metodo2: function () {
+        console.log('metodo2');
+    },
+
+    hola() {
+        console.log('hola');
+    },
 }
 
 const imprimePropiedades = (mpersona) => {
@@ -257,7 +272,9 @@ var juan = new Persona('Eder'); // todo el contexto Persona() es creado
 console.log(juan.imprimirPersona());
 
 
-//-Prototipos  , esto puede agregar funciones y propiedades nos permite hacer eso extender
+//----------------------Prototipos  ,  Prototype
+//esto puede agregar funciones y propiedades nos permite hacer eso extender
+//es el ADN del objeto
 
 function Persona(nombre) {
     this.nombre = nombre;
@@ -432,4 +449,304 @@ const a3 = soyFalso || 'ya no soy falso'; //  yano soy falso
 const a4 = soyFalso || soyundefined || soyNull || 'hola' || true; // hola
 const a5 = soyFalso || soyundefined || true || 'hola' || true; // true
 
-  
+
+//------------------------Clases
+// persona = {}   /  persona = new Function Persona();
+// los dos al asignar persona2 = persona    son valor por referencia
+// persona2 ! x= persona   use new 
+
+class Persona {
+    _nombre;
+    constructor(nombre = 'opcional'){
+        this._nombre = nombre;
+    }
+
+    set setNombre( nombre){
+        this._nombre = nombre;
+    }
+}
+
+const spiderman = new Persona();
+spiderman.setNombre='Eder';
+spiderman.nombre = 'HOla';
+
+
+
+
+
+
+
+//---------------------------------------   CLASES 2 --------------
+
+class Persona {
+    static _conteo = 0;
+    nombre;
+    constructor(nombre = 'opcional') {
+        this.nombre = nombre;
+        Persona._conteo++;
+    }
+    set setNombre(nombre) {
+        this.nombre = nombre;
+    }
+    get getNombre() { return this.nombre; }
+    static get conteo() { return Persona._conteo;}
+
+    static mensaje(){
+        //no puedes tomar las propiedades de la clase
+        console.log(this.nombre); // undefined   
+    }
+    quienSoy(){
+        console.log(`Soy ${this.nombre}`);
+        
+    }
+}
+ 
+//manejarlo como obj literal
+Persona.propiedadExterna = 'Hola Mundo'; //es una propiedad statica
+
+
+const spiderman = new Persona();
+const iroMan = new Persona();
+const blackPanter = new Persona();
+spiderman.setNombre = 'Eder';
+
+//problema yo puedo cambiar la propiedad del objeto sin set 
+spiderman.nombre = 'HOla';
+
+
+
+
+// ------------------------------------------ Extends 
+
+class Heroe extends Persona{
+    clan = 'sin clan';
+    constructor(nombre, codigo, frase) {
+        super(nombre, codigo, frase);
+        this.clan = 'Los Avengers';
+    }
+
+    quienSoy() {
+        console.log(`Soy ${this.nombre} clan: ${this.clan}`);
+
+        //si quiero llamar el otro quienSoy
+        super.quienSoy();
+    }
+
+
+    
+}
+
+
+const herospiderman = new Heroe();
+herospiderman.quienSoy();
+
+//------------------------------------------ clases Privadas
+
+class Rectangulo { 
+    #area =0 ;
+    parea = 0;
+    constructor(base = 0, altura =0){
+        this.base = base;
+        this.altura = altura;
+        this.#area = base * altura;
+        this.parea = base * altura;
+    }
+
+    calcularArea() {
+        console.log(this.#area*2);
+        
+    }
+}
+
+const rectangulo = new Rectangulo(10,15);
+//Problema yo puedo cambiar las propiedades
+// rectangulo.#area = 100;
+rectangulo.parea = 100;
+rectangulo.calcularArea();
+
+console.log(rectangulo);
+
+
+//----------------------------------Singleton
+
+
+class MySingleton{
+    static instancia;
+    nombre = ';'
+    
+    constructor(nombre = ''){
+        if (!!MySingleton.instancia){
+            return MySingleton.instancia;
+        }
+
+        MySingleton.instancia = this;
+        this.nombre = nombre;
+    }
+}
+
+const instancia1 = new MySingleton('IronMan');
+const instancia2 = new MySingleton('Thor');
+
+console.log(`Nombre 1 : ${instancia1.nombre}`);
+console.log(`Nombre 2 : ${instancia2.nombre}`);
+//output Ironman
+//output Ironman
+
+//-
+class MyClass {
+    nombre = ';'
+    constructor(nombre='') {
+        if (MyClass._instance) {
+            return MyClass._instance
+        }
+        MyClass._instance = this;
+        this.nombre = nombre;
+    }
+}
+
+var instanceOne = new MyClass('IronMan')
+var instanceTwo = new MyClass('Thor')
+
+console.log(`Nombre 1 : ${instanceOne.nombre}`);
+console.log(`Nombre 2 : ${instanceTwo.nombre}`);
+
+//-
+var Singleton = (function () {
+    var instance;
+ 
+    function createInstance() {
+        var object = new Object("I am the instance");
+        return object;
+    }
+ 
+    return {
+        getInstance: function () {
+            if (!instance) {
+                instance = createInstance();
+            }
+            return instance;
+        }
+    };
+})();
+ 
+function run() {
+ 
+    var instance1 = Singleton.getInstance();
+    var instance2 = Singleton.getInstance();
+ 
+    alert("Same instance? " + (instance1 === instance2));  
+}
+
+//----------------------- Multiples constructores
+
+class MPersona {
+
+    static porObjeto({ nombre, apellido, pais }) {
+        return new MPersona(nombre, apellido, pais);
+    }
+
+    constructor(nombre, apellido, pais) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.pais = pais;
+    }
+
+    getInfo() {
+        console.log(`info: ${this.nombre}, ${this.apellido}, ${this.pais}`);
+    }
+}
+
+const nombre1 = 'Melissa',
+    apellido1 = 'Flores',
+    pais1 = 'Honduras';
+
+const fher = {
+    nombre: 'Fernando',
+    apellido: 'Herrera',
+    pais: 'Costa Rica'
+}
+
+const persona1 = new MPersona(nombre1, apellido1, pais1);
+const persona2 = MPersona.porObjeto(fher);
+
+
+persona1.getInfo();
+persona2.getInfo();
+
+
+
+
+
+
+
+//-------------------------MODULOS ------
+// Cartas esta desarrollado con el patron modulo tmb es un ejemplo mas extenso
+
+var myApp = (function () {
+    var foo = 'Hello World';
+    return {
+        foo: foo
+    }
+})();
+
+
+//------------------- ES6 
+
+//------------------- Default
+export default function saludar(nombre) {
+    return `Hola ${nombre}`;
+}
+
+
+import saludar from "./default/mi-modulo.js";
+
+console.log(saludar('Juan'));
+
+
+//------------------ Named
+//modulo.js
+export function nombre(nombre) {
+    return `Hola ${nombre}`;
+}
+
+export function vehiculo(nombre) {
+    return `Hola ${nombre} placa: ${placa()}`;
+}
+
+export default class Cuadrado {
+
+    constructor(lado) {
+        this.lado = lado;
+    }
+
+    get area() {
+        return this.lado * this.lado;
+    }
+}
+
+
+
+var x = 777;
+
+function placa() {
+    return x;
+}
+
+
+
+//principal.js
+import Cuadrado, { nombre as name, vehiculo } from "./mi-modulo.js";
+
+console.log(name('Juan'));
+console.log(vehiculo('Juan'));
+const cuadrado = new Cuadrado(10);
+console.log(cuadrado.area);
+
+
+//----------------------------Fetch
+const URL_API_RANDOM_IMAGE = 'https://dog.ceo/api/breeds/image/random';
+const response = await fetch(URL_API_RANDOM_IMAGE);
+const data = await response.json();
+
+const urlImage = data.message;
+content.innerHTML = `<img src="${urlImage}">`;
